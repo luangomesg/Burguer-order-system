@@ -1,3 +1,4 @@
+import e from 'express'
 import express from 'express'
 import {v4} from 'uuid'
 
@@ -29,10 +30,15 @@ app.get("/order", methodRequisition, (request, response) => {
 })
 
 app.post("/order", methodRequisition, (request, response) => {
+    try {
     const {order, clienteName, price, status} = request.body
+    if(price <= 19.99) throw new Error("only purchases over 19,99 dollars are allowed")
     const newOrder = {id: v4(), order, clienteName, price, status}
     orders.push(newOrder)
     return response.status(201).json({message: "Pedido criado com sucesso", order})
+}catch(error) {
+    return response.status(400).json({"error": error.message})
+}
 })
 
 app.put("/order/:id", checkId, methodRequisition, (request, response) => {
